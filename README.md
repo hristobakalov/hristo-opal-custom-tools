@@ -53,6 +53,20 @@ HTTP client wrapper supporting various HTTP methods with custom headers.
 - `headers` (optional): Custom headers as JSON string
 - `body` (optional): Request body (for POST, PUT, PATCH methods)
 
+### create_experiment
+Creates a new A/B experiment in Optimizely Web Experimentation using the REST API.
+
+**Parameters:**
+- `project_id` (required): The Optimizely project ID where the experiment will be created
+- `api_token` (required): Optimizely API personal access token (Bearer token)
+- `description` (required): Description of the experiment
+- `experiment_name` (required): Name/identifier for the experiment
+- `status` (optional): Experiment status (not_started, running, paused, archived). Defaults to 'not_started'
+- `type` (optional): Experiment type (ab, multivariate, multipage). Defaults to 'ab'
+- `variations` (optional): JSON string array of variations. Example: `[{"name":"Original","actions":[]},{"name":"Variation 1","actions":[]}]`
+
+**Note:** You can generate an API token at [app.optimizely.com](https://app.optimizely.com/v2/profile/api) under Profile > API Access
+
 ### rick-roll
 Returns a Rick Roll GIF URL for fun interactions.
 
@@ -80,6 +94,7 @@ src/
     greeting.ts
     todays-date.ts
     api-call.ts
+    create-experiment.ts
     rick-roll.ts
     sqlite-query.ts
 vercel/

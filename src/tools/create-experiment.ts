@@ -1,8 +1,7 @@
 import { tool, ParameterType } from "@optimizely-opal/opal-tools-sdk";
 
 interface CreateExperimentParameters {
-  project_id: string;
-  api_token: string;
+  project_id?: string;
   description: string;
   experiment_name: string;
   status?: string;
@@ -10,16 +9,47 @@ interface CreateExperimentParameters {
   variations?: string;
 }
 
-async function createExperiment(parameters: CreateExperimentParameters) {
+interface AuthData {
+  provider?: string;
+  credentials?: {
+    access_token?: string;
+    [key: string]: any;
+  };
+  context?: {
+    project_id?: string;
+    [key: string]: any;
+  };
+  [key: string]: any;
+}
+
+async function createExperiment(
+  parameters: CreateExperimentParameters,
+  authData?: AuthData
+) {
   const {
-    project_id,
-    api_token,
+    project_id: paramProjectId,
     description,
     experiment_name,
     status = "not_started",
     type = "ab",
     variations,
   } = parameters;
+
+  // Extract access token from authData
+  const accessToken = authData?.credentials?.access_token;
+  if (!accessToken) {
+    throw new Error(
+      "Authentication required. Please ensure OptiID authentication is configured."
+    );
+  }
+
+  // Try to get project_id from context first, then fall back to parameter
+  const project_id = authData?.context?.project_id || paramProjectId;
+  if (!project_id) {
+    throw new Error(
+      "project_id is required. Either provide it as a parameter or ensure it's available in the context when running from Optimizely."
+    );
+  }
 
   // Parse variations if provided, otherwise create default variations
   let parsedVariations: any[];
@@ -59,7 +89,7 @@ async function createExperiment(parameters: CreateExperimentParameters) {
     const response = await fetch("https://api.optimizely.com/v2/experiments", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${api_token}`,
+        Authorization: `Bearer ${accessToken}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(requestBody),
@@ -109,19 +139,19 @@ async function createExperiment(parameters: CreateExperimentParameters) {
 tool({
   name: "create_experiment",
   description:
-    "Creates a new A/B experiment in Optimizely Web Experimentation using the REST API",
+    "Creates a new A/B experiment in Optimizely Web Experimentation using the REST API. Requires OptiID authentication.",
+  authRequirements: {
+    provider: "OptiID",
+    scopeBundle: "experiments",
+    required: true,
+  },
   parameters: [
     {
       name: "project_id",
       type: ParameterType.String,
-      description: "The Optimizely project ID where the experiment will be created",
-      required: true,
-    },
-    {
-      name: "api_token",
-      type: ParameterType.String,
-      description: "Optimizely API personal access token (Bearer token)",
-      required: true,
+      description:
+        "The Optimizely project ID where the experiment will be created. Optional if running from Optimizely context (automatically detected from URL).",
+      required: false,
     },
     {
       name: "description",

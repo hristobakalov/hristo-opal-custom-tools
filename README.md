@@ -54,18 +54,30 @@ HTTP client wrapper supporting various HTTP methods with custom headers.
 - `body` (optional): Request body (for POST, PUT, PATCH methods)
 
 ### create_experiment
-Creates a new A/B experiment in Optimizely Web Experimentation using the REST API.
+Creates a new A/B experiment in Optimizely Web Experimentation using the REST API. Uses OptiID authentication for secure access.
+
+**Authentication:**
+- Requires OptiID authentication (automatically handled when used within Optimizely Opal)
+- Uses the authenticated user's access token to create experiments
 
 **Parameters:**
-- `project_id` (required): The Optimizely project ID where the experiment will be created
-- `api_token` (required): Optimizely API personal access token (Bearer token)
+- `project_id` (optional): The Optimizely project ID where the experiment will be created. When used within Optimizely (e.g., from a project page), this is automatically detected from the URL context.
 - `description` (required): Description of the experiment
 - `experiment_name` (required): Name/identifier for the experiment
 - `status` (optional): Experiment status (not_started, running, paused, archived). Defaults to 'not_started'
 - `type` (optional): Experiment type (ab, multivariate, multipage). Defaults to 'ab'
 - `variations` (optional): JSON string array of variations. Example: `[{"name":"Original","actions":[]},{"name":"Variation 1","actions":[]}]`
 
-**Note:** You can generate an API token at [app.optimizely.com](https://app.optimizely.com/v2/profile/api) under Profile > API Access
+**Usage Example:**
+When using this tool from within Optimizely Opal on a project page (e.g., `https://app.optimizely.com/v2/projects/27482800909`), you only need to provide the experiment details:
+```
+create_experiment(
+  description: "Test homepage hero image",
+  experiment_name: "Homepage Hero Test"
+)
+```
+
+If running outside of Optimizely context, you'll need to explicitly provide the project_id.
 
 ### rick-roll
 Returns a Rick Roll GIF URL for fun interactions.

@@ -41,8 +41,11 @@ async function updateExperiment(
     );
   }
 
-  // Build the request body
-  const requestBody: any = { ...otherFields };
+  // Build the request body with account_id
+  const requestBody: any = {
+    account_id: 22816830226,
+    ...otherFields,
+  };
 
   // Parse metrics if provided
   if (metrics) {
@@ -53,6 +56,7 @@ async function updateExperiment(
       if (Array.isArray(parsedMetrics)) {
         requestBody.metrics = parsedMetrics.map((metric: any) => ({
           ...metric,
+          event_type: metric.event_type || "custom",
           scope: metric.scope || "visitor",
           winning_direction: metric.winning_direction || "increasing",
         }));
@@ -140,7 +144,7 @@ tool({
       name: "metrics",
       type: ParameterType.String,
       description:
-        'JSON string array of metrics to add/update. Example: [{"event_id":12345,"event_type":"custom","aggregator":"unique"}]. Each metric can have: event_id (required), event_type (required: custom/click/pageview), aggregator (optional: unique/count/sum/bounce/exit/ratio), scope (optional: session/visitor/event, defaults to "visitor"), winning_direction (optional: increasing/decreasing, defaults to "increasing")',
+        'JSON string array of metrics to add/update. Example: [{"event_id":12345,"aggregator":"unique"}]. Each metric can have: event_id (required), event_type (optional: custom/click/pageview, defaults to "custom"), aggregator (optional: unique/count/sum/bounce/exit/ratio), scope (optional: session/visitor/event, defaults to "visitor"), winning_direction (optional: increasing/decreasing, defaults to "increasing"). Note: account_id is automatically set to 22816830226.',
       required: false,
     },
   ],

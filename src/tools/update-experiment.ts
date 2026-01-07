@@ -56,6 +56,8 @@ async function updateExperiment(
       if (Array.isArray(parsedMetrics)) {
         requestBody.metrics = parsedMetrics.map((metric: any) => ({
           ...metric,
+          aggregator: metric.aggregator || "unique",
+          account_id: 22816830226,
           event_type: metric.event_type || "custom",
           scope: metric.scope || "visitor",
           winning_direction: metric.winning_direction || "increasing",

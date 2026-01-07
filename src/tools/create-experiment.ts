@@ -44,10 +44,18 @@ async function createExperiment(
   }
 
   // Try to get project_id from context first, then fall back to parameter
-  const project_id = authData?.context?.project_id || paramProjectId;
-  if (!project_id) {
+  const projectIdStr = authData?.context?.project_id || paramProjectId;
+  if (!projectIdStr) {
     throw new Error(
       "project_id is required. Either provide it as a parameter or ensure it's available in the context when running from Optimizely."
+    );
+  }
+
+  // Convert project_id to integer (API requires integer type)
+  const project_id = parseInt(String(projectIdStr), 10);
+  if (isNaN(project_id)) {
+    throw new Error(
+      `Invalid project_id: "${projectIdStr}". Must be a valid integer.`
     );
   }
 

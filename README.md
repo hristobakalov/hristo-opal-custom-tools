@@ -63,18 +63,17 @@ Creates a new A/B experiment in Optimizely Web Experimentation using the REST AP
 **Parameters:**
 - `project_id` (optional): The Optimizely project ID where the experiment will be created. When used within Optimizely (e.g., from a project page), this is automatically detected from the URL context.
 - `name` (required): Name of the experiment
-- `description` (required): Description/hypothesis of the experiment
-- `edit_url` (optional): URL where the experiment can be edited (e.g., the page URL being tested)
+- `description` (optional): Description/hypothesis of the experiment
+- `edit_url` (optional): URL where the experiment will run (e.g., the page URL being tested). When provided, automatically sets up URL targeting conditions.
 - `status` (optional): Experiment status (not_started, running, paused, archived). Defaults to 'not_started'
 - `type` (optional): Experiment type (a/b, feature, multivariate, personalization, multiarmed_bandit). Defaults to 'a/b'
 - `variations` (optional): JSON string array of variations with traffic allocation. If not provided, defaults to a 50/50 split between "Original" and "Variation #1"
 
 **Usage Example:**
-When using this tool from within Optimizely Opal on a project page (e.g., `https://app.optimizely.com/v2/projects/27482800909`), you only need to provide the experiment details:
+When using this tool from within Optimizely Opal on a project page (e.g., `https://app.optimizely.com/v2/projects/27482800909`), you only need to provide the experiment name:
 ```
 create_experiment(
   name: "Homepage Hero Test",
-  description: "Test homepage hero image variations",
   edit_url: "https://example.com/homepage"
 )
 ```

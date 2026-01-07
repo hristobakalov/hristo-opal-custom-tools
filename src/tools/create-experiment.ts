@@ -3,7 +3,7 @@ import { tool, ParameterType } from "@optimizely-opal/opal-tools-sdk";
 interface CreateExperimentParameters {
   project_id?: string;
   name: string;
-  description: string;
+  description?: string;
   edit_url?: string;
   status?: string;
   type?: string;
@@ -101,10 +101,21 @@ async function createExperiment(
     variations: parsedVariations,
   };
 
-  // Add url_targeting with edit_url if provided (optional field)
+  // Add url_targeting with edit_url and conditions if provided (optional field)
   if (edit_url) {
     requestBody.url_targeting = {
       edit_url: edit_url,
+      conditions: [
+        "and",
+        [
+          "or",
+          {
+            match_type: "simple",
+            type: "url",
+            value: edit_url,
+          },
+        ],
+      ],
     };
   }
 
@@ -185,8 +196,8 @@ tool({
     {
       name: "description",
       type: ParameterType.String,
-      description: "Description/hypothesis of the experiment",
-      required: true,
+      description: "Description/hypothesis of the experiment (optional)",
+      required: false,
     },
     {
       name: "edit_url",

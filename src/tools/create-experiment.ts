@@ -2,8 +2,9 @@ import { tool, ParameterType } from "@optimizely-opal/opal-tools-sdk";
 
 interface CreateExperimentParameters {
   project_id?: string;
+  name: string;
   description: string;
-  experiment_name: string;
+  edit_url?: string;
   status?: string;
   type?: string;
   variations?: string;
@@ -28,8 +29,9 @@ async function createExperiment(
 ) {
   const {
     project_id: paramProjectId,
+    name,
     description,
-    experiment_name,
+    edit_url,
     status = "not_started",
     type = "a/b",
     variations,
@@ -90,14 +92,21 @@ async function createExperiment(
   }
 
   // Construct the request body
-  const requestBody = {
+  const requestBody: any = {
     project_id,
-    status,
+    name,
     description,
+    status,
     type,
-    edit_url: experiment_name, // Using experiment_name as edit_url
     variations: parsedVariations,
   };
+
+  // Add url_targeting with edit_url if provided (optional field)
+  if (edit_url) {
+    requestBody.url_targeting = {
+      edit_url: edit_url,
+    };
+  }
 
   try {
     const response = await fetch("https://api.optimizely.com/v2/experiments", {
@@ -168,16 +177,22 @@ tool({
       required: false,
     },
     {
-      name: "description",
+      name: "name",
       type: ParameterType.String,
-      description: "Description of the experiment",
+      description: "Name of the experiment",
       required: true,
     },
     {
-      name: "experiment_name",
+      name: "description",
       type: ParameterType.String,
-      description: "Name/identifier for the experiment",
+      description: "Description/hypothesis of the experiment",
       required: true,
+    },
+    {
+      name: "edit_url",
+      type: ParameterType.String,
+      description: "Optional URL where the experiment can be edited (e.g., the page URL being tested)",
+      required: false,
     },
     {
       name: "status",

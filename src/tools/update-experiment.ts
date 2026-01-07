@@ -47,7 +47,17 @@ async function updateExperiment(
   // Parse metrics if provided
   if (metrics) {
     try {
-      requestBody.metrics = JSON.parse(metrics);
+      const parsedMetrics = JSON.parse(metrics);
+
+      // Apply default winning_direction if not provided
+      if (Array.isArray(parsedMetrics)) {
+        requestBody.metrics = parsedMetrics.map((metric: any) => ({
+          ...metric,
+          winning_direction: metric.winning_direction || "increasing",
+        }));
+      } else {
+        requestBody.metrics = parsedMetrics;
+      }
     } catch (error) {
       throw new Error(
         `Invalid metrics JSON: ${error instanceof Error ? error.message : String(error)}`
@@ -129,7 +139,7 @@ tool({
       name: "metrics",
       type: ParameterType.String,
       description:
-        'JSON string array of metrics to add/update. Example: [{"event_id":12345,"aggregator":"unique","scope":"visitor","winning_direction":"increasing"}]. Each metric can have: event_id (required), aggregator (unique/count/sum/bounce/exit/ratio), scope (session/visitor/event), winning_direction (increasing/decreasing)',
+        'JSON string array of metrics to add/update. Example: [{"event_id":12345,"event_type":"custom","aggregator":"unique","scope":"visitor","winning_direction":"increasing"}]. Each metric can have: event_id (required), event_type (required: custom/click/pageview), aggregator (optional: unique/count/sum/bounce/exit/ratio), scope (optional: session/visitor/event), winning_direction (optional: increasing/decreasing, defaults to "increasing")',
       required: false,
     },
   ],

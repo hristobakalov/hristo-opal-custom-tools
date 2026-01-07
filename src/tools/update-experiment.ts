@@ -49,19 +49,37 @@ async function updateExperiment(
     try {
       const parsedMetrics = JSON.parse(metrics);
 
+      // Normalize to array
+      const metricsArray = Array.isArray(parsedMetrics) ? parsedMetrics : [parsedMetrics];
+
       // Apply defaults if not provided - account_id and event_type must be in each metric
-      if (Array.isArray(parsedMetrics)) {
-        requestBody.metrics = parsedMetrics.map((metric: any) => ({
-          ...metric,
-          account_id: metric.account_id || 22816830226,
-          event_type: metric.event_type || "custom",
-          aggregator: metric.aggregator || "unique",
-          scope: metric.scope || "visitor",
-          winning_direction: metric.winning_direction || "increasing",
-        }));
-      } else {
-        requestBody.metrics = parsedMetrics;
-      }
+      // Use nullish coalescing to handle null/undefined, and ensure these fields are never null
+      requestBody.metrics = metricsArray.map((metric: any) => {
+        // Build metric object, ensuring required fields are never null/undefined
+        const processedMetric: any = {};
+        
+        // Copy all existing fields first
+        Object.keys(metric).forEach(key => {
+          if (metric[key] !== null && metric[key] !== undefined) {
+            processedMetric[key] = metric[key];
+          }
+        });
+        
+        // Always set account_id - override any null/undefined values
+        // Ensure it's a number (API might require integer)
+        const accountId = metric.account_id ?? 22816830226;
+        processedMetric.account_id = typeof accountId === 'number' ? accountId : parseInt(String(accountId), 10);
+        
+        // Always set event_type - override any null/undefined values
+        processedMetric.event_type = metric.event_type ?? "custom";
+        
+        // Set optional fields with defaults if not provided or null
+        processedMetric.aggregator = metric.aggregator ?? "unique";
+        processedMetric.scope = metric.scope ?? "visitor";
+        processedMetric.winning_direction = metric.winning_direction ?? "increasing";
+        
+        return processedMetric;
+      });
     } catch (error) {
       throw new Error(
         `Invalid metrics JSON: ${error instanceof Error ? error.message : String(error)}`

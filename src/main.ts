@@ -27,9 +27,11 @@ const toolsService = new ToolsService(app);
 import "./tools/api-call";
 import "./tools/create-experiment";
 import "./tools/greeting";
+import "./tools/list-events";
 import "./tools/rick-roll";
 import "./tools/sqlite-query";
 import "./tools/todays-date";
+import "./tools/update-experiment";
 
 // Export the Express app for serverless environments
 export { app };

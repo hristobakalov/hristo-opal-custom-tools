@@ -80,6 +80,43 @@ create_experiment(
 
 If running outside of Optimizely context, you'll need to explicitly provide the project_id.
 
+### list_events
+Gets all Events for an Optimizely project, including all types of Events and Pageview Events. Uses OptiID authentication for secure access.
+
+**Authentication:**
+- Requires OptiID authentication (automatically handled when used within Optimizely Opal)
+
+**Parameters:**
+- `project_id` (optional): The Optimizely project ID to list events for. When used within Optimizely, this is automatically detected from the URL context.
+- `include_classic` (optional): Set to true to include Goal objects from Optimizely Classic. Defaults to false.
+
+**Usage Example:**
+```
+list_events()
+```
+
+### update_experiment
+Updates an existing Optimizely experiment by its ID. Can be used to add or update metrics and other experiment properties. Uses OptiID authentication for secure access.
+
+**Authentication:**
+- Requires OptiID authentication (automatically handled when used within Optimizely Opal)
+
+**Parameters:**
+- `experiment_id` (required): The ID of the experiment to update
+- `metrics` (optional): JSON string array of metrics to add/update. Each metric should include:
+  - `event_id` (required): The ID of the event to track
+  - `aggregator` (optional): How to aggregate the metric (unique, count, sum, bounce, exit, ratio)
+  - `scope` (optional): The scope of measurement (session, visitor, event)
+  - `winning_direction` (optional): Which direction is better (increasing, decreasing)
+
+**Usage Example:**
+```
+update_experiment(
+  experiment_id: "12345",
+  metrics: '[{"event_id":67890,"aggregator":"unique","scope":"visitor","winning_direction":"increasing"}]'
+)
+```
+
 ### rick-roll
 Returns a Rick Roll GIF URL for fun interactions.
 
@@ -108,6 +145,8 @@ src/
     todays-date.ts
     api-call.ts
     create-experiment.ts
+    list-events.ts
+    update-experiment.ts
     rick-roll.ts
     sqlite-query.ts
 vercel/

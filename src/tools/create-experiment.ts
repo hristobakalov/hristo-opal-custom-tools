@@ -37,6 +37,9 @@ async function createExperiment(
     variations,
   } = parameters;
 
+  // Log authData for debugging
+  console.log("AuthData received:", JSON.stringify(authData, null, 2));
+
   // Extract access token from authData
   const accessToken = authData?.credentials?.access_token;
   if (!accessToken) {
@@ -46,10 +49,20 @@ async function createExperiment(
   }
 
   // Try to get project_id from context first, then fall back to parameter
-  const projectIdStr = authData?.context?.project_id || paramProjectId;
+  // Check multiple possible locations in authData
+  const projectIdStr =
+    authData?.context?.project_id ||
+    authData?.project_id ||
+    (authData as any)?.projectId ||
+    paramProjectId;
+
+  console.log("Project ID found:", projectIdStr);
+  console.log("Available authData keys:", Object.keys(authData || {}));
+  console.log("Available context keys:", Object.keys(authData?.context || {}));
+
   if (!projectIdStr) {
     throw new Error(
-      "project_id is required. Either provide it as a parameter or ensure it's available in the context when running from Optimizely."
+      `project_id is required. Either provide it as a parameter or ensure it's available in the context when running from Optimizely. AuthData structure: ${JSON.stringify(authData, null, 2)}`
     );
   }
 
@@ -105,6 +118,8 @@ async function createExperiment(
   if (edit_url) {
     requestBody.url_targeting = {
       edit_url: edit_url,
+      activation_type: "immediate",
+      deactivation_enabled: false,
       conditions: [
         "and",
         [
@@ -202,8 +217,8 @@ tool({
     {
       name: "edit_url",
       type: ParameterType.String,
-      description: "Optional URL where the experiment can be edited (e.g., the page URL being tested)",
-      required: false,
+      description: "required URL where the experiment can be edited (e.g., the page URL being tested)",
+      required: true,
     },
     {
       name: "status",

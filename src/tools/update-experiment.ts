@@ -41,24 +41,21 @@ async function updateExperiment(
     );
   }
 
-  // Build the request body with account_id
-  const requestBody: any = {
-    account_id: 22816830226,
-    ...otherFields,
-  };
+  // Build the request body
+  const requestBody: any = { ...otherFields };
 
   // Parse metrics if provided
   if (metrics) {
     try {
       const parsedMetrics = JSON.parse(metrics);
 
-      // Apply defaults if not provided
+      // Apply defaults if not provided - account_id and event_type must be in each metric
       if (Array.isArray(parsedMetrics)) {
         requestBody.metrics = parsedMetrics.map((metric: any) => ({
           ...metric,
-          aggregator: metric.aggregator || "unique",
-          account_id: 22816830226,
+          account_id: metric.account_id || 22816830226,
           event_type: metric.event_type || "custom",
+          aggregator: metric.aggregator || "unique",
           scope: metric.scope || "visitor",
           winning_direction: metric.winning_direction || "increasing",
         }));
@@ -146,7 +143,7 @@ tool({
       name: "metrics",
       type: ParameterType.String,
       description:
-        'JSON string array of metrics to add/update. Example: [{"event_id":12345,"aggregator":"unique"}]. Each metric can have: event_id (required), event_type (optional: custom/click/pageview, defaults to "custom"), aggregator (optional: unique/count/sum/bounce/exit/ratio), scope (optional: session/visitor/event, defaults to "visitor"), winning_direction (optional: increasing/decreasing, defaults to "increasing"). Note: account_id is automatically set to 22816830226.',
+        'JSON string array of metrics to add/update. Example: [{"event_id":12345}]. Each metric can have: event_id (required), account_id (optional, defaults to 22816830226), event_type (optional: custom/click/pageview, defaults to "custom"), aggregator (optional: unique/count/sum/bounce/exit/ratio, defaults to "unique"), scope (optional: session/visitor/event, defaults to "visitor"), winning_direction (optional: increasing/decreasing, defaults to "increasing").',
       required: false,
     },
   ],

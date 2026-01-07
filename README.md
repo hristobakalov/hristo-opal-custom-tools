@@ -105,23 +105,26 @@ Updates an existing Optimizely experiment by its ID. Can be used to add or updat
 - `experiment_id` (required): The ID of the experiment to update
 - `metrics` (optional): JSON string array of metrics to add/update. Each metric should include:
   - `event_id` (required): The ID of the event to track
+  - `account_id` (optional): The account ID. Defaults to 22816830226 if not provided.
   - `event_type` (optional): The type of event (custom, click, pageview). Defaults to "custom" if not provided.
-  - `aggregator` (optional): How to aggregate the metric (unique, count, sum, bounce, exit, ratio)
+  - `aggregator` (optional): How to aggregate the metric (unique, count, sum, bounce, exit, ratio). Defaults to "unique" if not provided.
   - `scope` (optional): The scope of measurement (session, visitor, event). Defaults to "visitor" if not provided.
   - `winning_direction` (optional): Which direction is better (increasing, decreasing). Defaults to "increasing" if not provided.
 
-**Usage Example:**
+**Usage Example (minimal - only event_id required):**
 ```
 update_experiment(
   experiment_id: "12345",
-  metrics: '[{"event_id":67890,"aggregator":"unique"}]'
+  metrics: '[{"event_id":67890}]'
 )
 ```
-Note: The tool automatically sets:
+
+**Note:** The tool automatically sets smart defaults for all optional fields:
 - `account_id`: 22816830226
-- `event_type`: "custom" (if not specified)
-- `scope`: "visitor" (if not specified)
-- `winning_direction`: "increasing" (if not specified)
+- `event_type`: "custom"
+- `aggregator`: "unique"
+- `scope`: "visitor"
+- `winning_direction`: "increasing"
 
 ### rick-roll
 Returns a Rick Roll GIF URL for fun interactions.

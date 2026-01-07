@@ -116,21 +116,24 @@ async function createExperiment(
 
   // Add url_targeting with edit_url and conditions if provided (optional field)
   if (edit_url) {
+    // Conditions must be a JSON string, not an object
+    const conditions = JSON.stringify([
+      "and",
+      [
+        "or",
+        {
+          match_type: "simple",
+          type: "url",
+          value: edit_url,
+        },
+      ],
+    ]);
+
     requestBody.url_targeting = {
       edit_url: edit_url,
       activation_type: "immediate",
       deactivation_enabled: false,
-      conditions: [
-        "and",
-        [
-          "or",
-          {
-            match_type: "simple",
-            type: "url",
-            value: edit_url,
-          },
-        ],
-      ],
+      conditions: conditions,
     };
   }
 

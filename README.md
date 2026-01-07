@@ -65,8 +65,8 @@ Creates a new A/B experiment in Optimizely Web Experimentation using the REST AP
 - `description` (required): Description of the experiment
 - `experiment_name` (required): Name/identifier for the experiment
 - `status` (optional): Experiment status (not_started, running, paused, archived). Defaults to 'not_started'
-- `type` (optional): Experiment type (ab, multivariate, multipage). Defaults to 'ab'
-- `variations` (optional): JSON string array of variations. Example: `[{"name":"Original","actions":[]},{"name":"Variation 1","actions":[]}]`
+- `type` (optional): Experiment type (a/b, multivariate, multipage). Defaults to 'a/b'
+- `variations` (optional): JSON string array of variations with traffic allocation. If not provided, defaults to a 50/50 split between "Original" and "Variation #1"
 
 **Usage Example:**
 When using this tool from within Optimizely Opal on a project page (e.g., `https://app.optimizely.com/v2/projects/27482800909`), you only need to provide the experiment details:

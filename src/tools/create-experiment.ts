@@ -31,7 +31,7 @@ async function createExperiment(
     description,
     experiment_name,
     status = "not_started",
-    type = "ab",
+    type = "a/b",
     variations,
   } = parameters;
 
@@ -70,14 +70,20 @@ async function createExperiment(
       );
     }
   } else {
-    // Default variations with control and variation
+    // Default variations with 50/50 traffic split
     parsedVariations = [
       {
         name: "Original",
+        weight: 5000,
+        totalTraffic: 50,
+        percentage: 50,
         actions: [],
       },
       {
-        name: "Variation 1",
+        name: "Variation #1",
+        weight: 5000,
+        totalTraffic: 50,
+        percentage: 50,
         actions: [],
       },
     ];
@@ -183,14 +189,14 @@ tool({
     {
       name: "type",
       type: ParameterType.String,
-      description: "Experiment type (ab, multivariate, multipage). Defaults to 'ab'",
+      description: "Experiment type (a/b, multivariate, multipage). Defaults to 'a/b'",
       required: false,
     },
     {
       name: "variations",
       type: ParameterType.String,
       description:
-        'Optional JSON string array of variations. Example: [{"name":"Original","actions":[]},{"name":"Variation 1","actions":[]}]',
+        'Optional JSON string array of variations with traffic allocation. If not provided, defaults to 50/50 split between "Original" and "Variation #1". Example: [{"name":"Original","weight":5000,"totalTraffic":50,"percentage":50,"actions":[]},{"name":"Variation #1","weight":5000,"totalTraffic":50,"percentage":50,"actions":[]}]',
       required: false,
     },
   ],

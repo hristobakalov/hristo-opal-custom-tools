@@ -24,14 +24,9 @@ app.use((req, res, next) => {
 const toolsService = new ToolsService(app);
 
 // Import tools
-import "./tools/api-call";
 import "./tools/create-experiment";
-import "./tools/greeting";
 import "./tools/list-events";
-import "./tools/rick-roll";
-import "./tools/sqlite-query";
-import "./tools/todays-date";
-import "./tools/update-experiment";
+// import "./tools/update-experiment"; // Commented out - needs API documentation verification
 
 // Export the Express app for serverless environments
 export { app };

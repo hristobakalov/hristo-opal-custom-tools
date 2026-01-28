@@ -95,6 +95,42 @@ Gets all Events for an Optimizely project, including all types of Events and Pag
 list_events()
 ```
 
+### generate_experiment_report
+Generates a PDF report from Optimizely experiment results and sends it to a specified email address. Automatically transforms Optimizely Stats API results JSON into a formatted, professional report with metrics, variations, and recommendations.
+
+**Parameters:**
+- `recipientEmail` (required): Email address where the PDF report will be sent
+- `experimentName` (required): Name of the experiment for the report title
+- `optimizelyResultsJson` (required): Complete Optimizely experiment results JSON from the Stats API. Must include experiment_id, start_time, end_time, metrics with results, reach with variations, and stats_config
+- `hypothesis` (optional): The hypothesis being tested in the experiment
+- `recommendationStatus` (optional): Status such as 'Winner', 'Inconclusive', 'Continue Testing'. Defaults to 'Under Review'
+- `recommendationTitle` (optional): Title of the recommendation (e.g., 'Deploy Variation A to 100% traffic')
+- `recommendationDescription` (optional): Detailed explanation of the recommendation and reasoning
+- `actions` (optional): JSON array or comma-separated string of next steps. Defaults to generic actions if not provided
+
+**What Gets Extracted Automatically:**
+The tool automatically extracts and transforms from the Optimizely results JSON:
+- Experiment ID and dates (start/end)
+- Duration calculation
+- Total sample size and confidence level
+- All metrics with lift calculations
+- All variations with their performance data
+
+**Usage Example:**
+```
+generate_experiment_report(
+  recipientEmail: "analyst@example.com",
+  experimentName: "Homepage CTA Test",
+  optimizelyResultsJson: '{"experiment_id":12345,"start_time":"2025-01-01T00:00:00Z",...}',
+  hypothesis: "Changing button color will increase conversions",
+  recommendationStatus: "Winner",
+  recommendationTitle: "Deploy Variation #1",
+  actions: "Deploy to production, Monitor for 2 weeks, Document learnings"
+)
+```
+
+See [examples/generate-experiment-report-example.md](examples/generate-experiment-report-example.md) for detailed usage examples.
+
 ### update_experiment
 Updates an existing Optimizely experiment by its ID. Can be used to add or update metrics and other experiment properties. Uses OptiID authentication for secure access.
 
@@ -150,20 +186,17 @@ The application is designed to work in both traditional server environments and 
 src/
   main.ts          # Main application entry point (exports app for serverless)
   tools/           # Individual tool implementations
-    greeting.ts
-    todays-date.ts
-    api-call.ts
     create-experiment.ts
     list-events.ts
-    update-experiment.ts
-    rick-roll.ts
-    sqlite-query.ts
+    generate-experiment-report.ts
 vercel/
   index.ts         # Vercel serverless function entry point
 netlify/
   functions/
     api.ts         # Netlify Functions entry point
 build/             # Compiled JavaScript output
+examples/          # Usage examples and documentation
+  generate-experiment-report-example.md
 docs/              # Deployment documentation
 ```
 

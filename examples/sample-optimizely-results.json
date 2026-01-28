@@ -1,0 +1,168 @@
+{
+  "confidence_threshold": 0.9,
+  "end_time": "2025-10-16T16:05:42.885000Z",
+  "experiment_id": 4760416228737024,
+  "is_stale": false,
+  "last_calculated_time": "2026-01-28T10:23:40.353000Z",
+  "metrics": [
+    {
+      "name": "Click on homepage CTA",
+      "event_id": 27940630014,
+      "aggregator": "unique",
+      "scope": "visitor",
+      "winning_direction": "increasing",
+      "results": {
+        "4565994467753984": {
+          "level": "variation",
+          "name": "Original",
+          "samples": 277,
+          "variation_id": "4565994467753984",
+          "is_baseline": true,
+          "value": 82,
+          "rate": 0.296028880866426,
+          "variance": 0.20839578255939736
+        },
+        "4713473611923456": {
+          "level": "variation",
+          "name": "Variation #2",
+          "samples": 272,
+          "variation_id": "4713473611923456",
+          "is_baseline": false,
+          "value": 132,
+          "rate": 0.4852941176470588,
+          "lift": {
+            "end_of_epoch": false,
+            "is_significant": false,
+            "lift_status": "better",
+            "significance": 0.7571863592749448,
+            "value": 0.6393472022955524,
+            "visitors_remaining": 47,
+            "confidence_interval": [
+              -0.16208112896537086,
+              1.4407755335564758
+            ]
+          },
+          "variance": 0.24978373702422144
+        },
+        "6590003577356288": {
+          "level": "variation",
+          "name": "Variation #1",
+          "samples": 274,
+          "variation_id": "6590003577356288",
+          "is_baseline": false,
+          "value": 135,
+          "rate": 0.4927007299270073,
+          "lift": {
+            "end_of_epoch": false,
+            "is_significant": false,
+            "lift_status": "better",
+            "significance": 0.7760248837156417,
+            "value": 0.6643670998753783,
+            "visitors_remaining": 41,
+            "confidence_interval": [
+              -0.14772970583459677,
+              1.4764639055853535
+            ]
+          },
+          "variance": 0.2499467206564015
+        }
+      }
+    },
+    {
+      "name": "submit order",
+      "event_id": 27938590013,
+      "aggregator": "unique",
+      "scope": "visitor",
+      "winning_direction": "increasing",
+      "results": {
+        "4565994467753984": {
+          "level": "variation",
+          "name": "Original",
+          "samples": 277,
+          "variation_id": "4565994467753984",
+          "is_baseline": true,
+          "value": 93,
+          "rate": 0.33574007220216606,
+          "variance": 0.22301867611985038
+        },
+        "4713473611923456": {
+          "level": "variation",
+          "name": "Variation #2",
+          "samples": 272,
+          "variation_id": "4713473611923456",
+          "is_baseline": false,
+          "value": 154,
+          "rate": 0.5661764705882353,
+          "lift": {
+            "end_of_epoch": false,
+            "is_significant": false,
+            "lift_status": "better",
+            "significance": 0.7930237695256774,
+            "value": 0.6863535736875395,
+            "visitors_remaining": 28,
+            "confidence_interval": [
+              -0.09608440275134467,
+              1.4687915501264235
+            ]
+          },
+          "variance": 0.24562067474048443
+        },
+        "6590003577356288": {
+          "level": "variation",
+          "name": "Variation #1",
+          "samples": 274,
+          "variation_id": "6590003577356288",
+          "is_baseline": false,
+          "value": 142,
+          "rate": 0.5182481751824818,
+          "lift": {
+            "end_of_epoch": false,
+            "is_significant": false,
+            "lift_status": "better",
+            "significance": 0.6115582966056365,
+            "value": 0.5435994035005103,
+            "visitors_remaining": 62,
+            "confidence_interval": [
+              -0.17519809777791873,
+              1.2623969047789392
+            ]
+          },
+          "variance": 0.24966700410250944
+        }
+      }
+    }
+  ],
+  "reach": {
+    "baseline_count": 277,
+    "baseline_reach": 0.33657351154313486,
+    "treatment_reach": 0.6634264884568651,
+    "total_count": 823,
+    "treatment_count": 546,
+    "variations": {
+      "4565994467753984": {
+        "count": 277,
+        "name": "Original",
+        "variation_id": "4565994467753984",
+        "variation_reach": 0.33657351154313486
+      },
+      "4713473611923456": {
+        "count": 272,
+        "name": "Variation #2",
+        "variation_id": "4713473611923456",
+        "variation_reach": 0.330498177399757
+      },
+      "6590003577356288": {
+        "count": 274,
+        "name": "Variation #1",
+        "variation_id": "6590003577356288",
+        "variation_reach": 0.33292831105710813
+      }
+    }
+  },
+  "start_time": "2025-10-15T10:30:29.247000Z",
+  "stats_config": {
+    "confidence_level": 0.9,
+    "difference_type": "relative",
+    "epoch_enabled": false
+  }
+}

@@ -98,6 +98,10 @@ list_events()
 ### generate_experiment_report
 Generates a PDF report from Optimizely experiment results and sends it to a specified email address. Automatically transforms Optimizely Stats API results JSON into a formatted, professional report with metrics, variations, and recommendations.
 
+**Authentication:**
+- Requires Supabase API key (anon key) for authentication
+- Can be provided via `supabaseApiKey` parameter or `SUPABASE_ANON_KEY` environment variable
+
 **Parameters:**
 - `recipientEmail` (required): Email address where the PDF report will be sent
 - `experimentName` (required): Name of the experiment for the report title
@@ -107,6 +111,7 @@ Generates a PDF report from Optimizely experiment results and sends it to a spec
 - `recommendationTitle` (optional): Title of the recommendation (e.g., 'Deploy Variation A to 100% traffic')
 - `recommendationDescription` (optional): Detailed explanation of the recommendation and reasoning
 - `actions` (optional): JSON array or comma-separated string of next steps. Defaults to generic actions if not provided
+- `supabaseApiKey` (optional): Supabase anon API key. If not provided, uses SUPABASE_ANON_KEY environment variable
 
 **What Gets Extracted Automatically:**
 The tool automatically extracts and transforms from the Optimizely results JSON:
@@ -122,12 +127,21 @@ generate_experiment_report(
   recipientEmail: "analyst@example.com",
   experimentName: "Homepage CTA Test",
   optimizelyResultsJson: '{"experiment_id":12345,"start_time":"2025-01-01T00:00:00Z",...}',
+  supabaseApiKey: "your-supabase-anon-key",
   hypothesis: "Changing button color will increase conversions",
   recommendationStatus: "Winner",
   recommendationTitle: "Deploy Variation #1",
   actions: "Deploy to production, Monitor for 2 weeks, Document learnings"
 )
 ```
+
+**Environment Variable Setup:**
+To avoid passing the API key in every request, set the environment variable:
+```bash
+export SUPABASE_ANON_KEY="your-supabase-anon-key"
+```
+
+For Netlify deployment, add this as an environment variable in your Netlify site settings.
 
 See [examples/generate-experiment-report-example.md](examples/generate-experiment-report-example.md) for detailed usage examples.
 

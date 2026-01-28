@@ -47,6 +47,7 @@ interface GenerateReportParameters {
   recommendationTitle?: string;
   recommendationDescription?: string;
   actions?: string;
+  supabaseApiKey?: string; // Optional Supabase anon key
 }
 
 /**
@@ -127,6 +128,7 @@ async function generateExperimentReport(
     recommendationTitle,
     recommendationDescription,
     actions: actionsStr,
+    supabaseApiKey,
   } = parameters;
 
   // Validate required fields
@@ -194,6 +196,15 @@ async function generateExperimentReport(
     actions,
   };
 
+  // Get API key from parameter or environment variable
+  const apiKey = supabaseApiKey || process.env.SUPABASE_ANON_KEY;
+
+  if (!apiKey) {
+    throw new Error(
+      "Supabase API key is required. Either provide 'supabaseApiKey' parameter or set SUPABASE_ANON_KEY environment variable."
+    );
+  }
+
   // Construct request body
   const requestBody = {
     recipientEmail,
@@ -207,6 +218,7 @@ async function generateExperimentReport(
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${apiKey}`,
         },
         body: JSON.stringify(requestBody),
       }
@@ -318,6 +330,13 @@ tool({
       type: ParameterType.String,
       description:
         'Optional: JSON array or comma-separated string of next actions. Example: ["Deploy winning variation","Monitor performance for 30 days"] or "Deploy winning variation, Monitor performance". Defaults to generic actions if not provided',
+      required: false,
+    },
+    {
+      name: "supabaseApiKey",
+      type: ParameterType.String,
+      description:
+        "Optional: Supabase anon API key for authentication. If not provided, will use SUPABASE_ANON_KEY environment variable. Required for the report generation service to work.",
       required: false,
     },
   ],

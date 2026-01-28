@@ -3,6 +3,13 @@
 ## Overview
 The `generate_experiment_report` tool generates a PDF report from Optimizely experiment results and emails it to a specified recipient. It automatically transforms the complex Optimizely Stats API JSON into a formatted, professional report.
 
+## Authentication
+The tool requires a Supabase API key (anon key) for authentication. You can provide it in two ways:
+1. **Parameter**: Pass `supabaseApiKey` in the tool call
+2. **Environment Variable**: Set `SUPABASE_ANON_KEY` environment variable
+
+For production/Netlify deployments, it's recommended to use the environment variable approach.
+
 ## Required Parameters
 
 1. **recipientEmail** (required): Email address where the PDF report will be sent
@@ -11,15 +18,16 @@ The `generate_experiment_report` tool generates a PDF report from Optimizely exp
 
 ## Optional Parameters
 
-4. **hypothesis** (optional): The hypothesis being tested
-5. **recommendationStatus** (optional): e.g., "Winner", "Inconclusive", "Continue Testing"
-6. **recommendationTitle** (optional): e.g., "Deploy Variation #1 to 100% traffic"
-7. **recommendationDescription** (optional): Detailed explanation of the recommendation
-8. **actions** (optional): JSON array or comma-separated string of next steps
+4. **supabaseApiKey** (optional): Supabase anon key. If not provided, uses `SUPABASE_ANON_KEY` environment variable
+5. **hypothesis** (optional): The hypothesis being tested
+6. **recommendationStatus** (optional): e.g., "Winner", "Inconclusive", "Continue Testing"
+7. **recommendationTitle** (optional): e.g., "Deploy Variation #1 to 100% traffic"
+8. **recommendationDescription** (optional): Detailed explanation of the recommendation
+9. **actions** (optional): JSON array or comma-separated string of next steps
 
 ## Example Usage
 
-### Minimal Example (Required Fields Only)
+### Minimal Example (Using Environment Variable for API Key)
 
 ```json
 {
@@ -29,12 +37,24 @@ The `generate_experiment_report` tool generates a PDF report from Optimizely exp
 }
 ```
 
+### With API Key Parameter
+
+```json
+{
+  "recipientEmail": "analyst@example.com",
+  "experimentName": "Optimizely.com Increase sign-ups",
+  "supabaseApiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "optimizelyResultsJson": "{...}"
+}
+```
+
 ### Complete Example (All Fields)
 
 ```json
 {
   "recipientEmail": "analyst@example.com",
   "experimentName": "Optimizely.com Increase sign-ups",
+  "supabaseApiKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
   "optimizelyResultsJson": "{...full Optimizely JSON...}",
   "hypothesis": "Changing the CTA button color and text will increase click-through rates and conversions",
   "recommendationStatus": "Promising Results",
@@ -93,6 +113,27 @@ The tool returns:
 }
 ```
 
+## Environment Variable Setup
+
+### Local Development
+Create a `.env` file or export the variable:
+```bash
+export SUPABASE_ANON_KEY="your-supabase-anon-key-here"
+```
+
+### Netlify Deployment
+1. Go to your Netlify site settings
+2. Navigate to "Site configuration" → "Environment variables"
+3. Add a new variable:
+   - Key: `SUPABASE_ANON_KEY`
+   - Value: Your Supabase anon key
+4. Redeploy your site
+
+### Getting Your Supabase Anon Key
+1. Go to your Supabase project dashboard
+2. Navigate to "Settings" → "API"
+3. Copy the "anon" / "public" key under "Project API keys"
+
 ## Tips
 
 1. **Get Optimizely Results**: Use the Optimizely Stats API to fetch experiment results
@@ -100,3 +141,4 @@ The tool returns:
 3. **Default Values**: If you don't provide optional fields, sensible defaults are used
 4. **Actions Format**: Either format works - comma-separated string or JSON array
 5. **Email Delivery**: The PDF is automatically sent to the recipient email and also accessible via the returned URLs
+6. **API Key Security**: For production, always use environment variables instead of hardcoding the API key

@@ -26,6 +26,7 @@ const toolsService = new ToolsService(app);
 // Import tools
 import "./tools/create-experiment";
 import "./tools/list-events";
+import "./tools/generate-experiment-report";
 // import "./tools/update-experiment"; // Commented out - needs API documentation verification
 
 // Export the Express app for serverless environments

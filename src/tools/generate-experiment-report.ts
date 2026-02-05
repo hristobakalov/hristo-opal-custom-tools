@@ -41,7 +41,7 @@ interface ExperimentData {
 interface GenerateReportParameters {
   recipientEmail: string;
   experimentName: string;
-  optimizelyResultsJson: string; // Raw Optimizely results JSON
+  optimizelyResultsJson: string | any; // Raw Optimizely results JSON (can be string or already parsed object)
   hypothesis?: string;
   recommendationStatus?: string;
   recommendationTitle?: string;
@@ -51,12 +51,77 @@ interface GenerateReportParameters {
 }
 
 /**
+ * Attempts to fix common JSON formatting issues
+ */
+function fixCommonJsonIssues(jsonString: string): string {
+  let fixed = jsonString;
+
+  // Remove trailing commas before closing brackets/braces
+  fixed = fixed.replace(/,(\s*[}\]])/g, '$1');
+
+  // Try to balance braces
+  const openBraces = (fixed.match(/{/g) || []).length;
+  const closeBraces = (fixed.match(/}/g) || []).length;
+
+  if (openBraces < closeBraces) {
+    // Too many closing braces - remove extras from the end
+    const diff = closeBraces - openBraces;
+    console.log(`Detected ${diff} extra closing brace(s), attempting to fix...`);
+    for (let i = 0; i < diff; i++) {
+      const lastCloseBrace = fixed.lastIndexOf('}');
+      if (lastCloseBrace > -1) {
+        fixed = fixed.substring(0, lastCloseBrace) + fixed.substring(lastCloseBrace + 1);
+      }
+    }
+  }
+
+  // Try to balance brackets
+  const openBrackets = (fixed.match(/\[/g) || []).length;
+  const closeBrackets = (fixed.match(/\]/g) || []).length;
+
+  if (openBrackets < closeBrackets) {
+    const diff = closeBrackets - openBrackets;
+    console.log(`Detected ${diff} extra closing bracket(s), attempting to fix...`);
+    for (let i = 0; i < diff; i++) {
+      const lastCloseBracket = fixed.lastIndexOf(']');
+      if (lastCloseBracket > -1) {
+        fixed = fixed.substring(0, lastCloseBracket) + fixed.substring(lastCloseBracket + 1);
+      }
+    }
+  }
+
+  return fixed;
+}
+
+/**
  * Transforms Optimizely experiment results JSON into the format expected by the report API
  */
 function transformOptimizelyResults(resultsJson: any): Partial<ExperimentData> {
+  // Handle nested structure: if resultsJson has 'results' property, extract stats data from it
+  let statsData = resultsJson;
+
+  if (resultsJson.results && typeof resultsJson.results === 'object') {
+    console.log("Detected nested structure with 'results' property, extracting stats data...");
+    statsData = resultsJson.results;
+  }
+
+  // Validate required fields
+  const requiredFields = ['experiment_id', 'start_time', 'end_time', 'metrics', 'reach', 'stats_config'];
+  const missingFields = requiredFields.filter(field => !statsData[field]);
+
+  if (missingFields.length > 0) {
+    console.error("Missing required fields:", missingFields);
+    console.error("Available fields in statsData:", Object.keys(statsData));
+    throw new Error(
+      `Missing required fields in Optimizely results: ${missingFields.join(', ')}. ` +
+      `Available fields: ${Object.keys(statsData).join(', ')}. ` +
+      `Please ensure you're sending the complete Optimizely Stats API response.`
+    );
+  }
+
   // Calculate date range and duration
-  const startDate = new Date(resultsJson.start_time);
-  const endDate = new Date(resultsJson.end_time);
+  const startDate = new Date(statsData.start_time);
+  const endDate = new Date(statsData.end_time);
   const durationDays = Math.ceil(
     (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24)
   );
@@ -65,7 +130,7 @@ function transformOptimizelyResults(resultsJson: any): Partial<ExperimentData> {
   const duration = `${durationDays} days`;
 
   // Extract metrics and transform them
-  const metrics: Metric[] = resultsJson.metrics.map((metric: any) => {
+  const metrics: Metric[] = (statsData.metrics || []).map((metric: any) => {
     const variations: MetricVariation[] = [];
     const results = metric.results;
 
@@ -96,7 +161,7 @@ function transformOptimizelyResults(resultsJson: any): Partial<ExperimentData> {
 
   // Extract variations from reach data
   const variations: Variation[] = Object.values(
-    resultsJson.reach.variations
+    statsData.reach.variations
   ).map((variation: any) => ({
     name: variation.name,
     sampleSize: variation.count,
@@ -106,11 +171,11 @@ function transformOptimizelyResults(resultsJson: any): Partial<ExperimentData> {
   }));
 
   return {
-    experimentId: String(resultsJson.experiment_id),
+    experimentId: String(statsData.experiment_id),
     dateRange,
     duration,
-    sampleSize: resultsJson.reach.total_count,
-    confidenceLevel: resultsJson.stats_config.confidence_level * 100,
+    sampleSize: statsData.reach.total_count,
+    confidenceLevel: statsData.stats_config.confidence_level * 100,
     metrics,
     variations,
   };
@@ -140,11 +205,45 @@ async function generateExperimentReport(
 
   // Parse Optimizely results JSON
   let resultsData: any;
-  try {
-    resultsData = JSON.parse(optimizelyResultsJson);
-  } catch (error) {
+
+  // Check if optimizelyResultsJson is already an object or a string
+  if (typeof optimizelyResultsJson === 'object' && optimizelyResultsJson !== null) {
+    // Already parsed
+    resultsData = optimizelyResultsJson;
+  } else if (typeof optimizelyResultsJson === 'string') {
+    // Need to parse the string
+    try {
+      resultsData = JSON.parse(optimizelyResultsJson);
+    } catch (error) {
+      console.log("Initial JSON parse failed, attempting to fix common issues...");
+
+      // Try to fix common JSON issues and parse again
+      try {
+        const fixedJson = fixCommonJsonIssues(optimizelyResultsJson);
+        resultsData = JSON.parse(fixedJson);
+        console.log("✓ Successfully parsed JSON after automatic fixes");
+      } catch (secondError) {
+        // Still failed, provide detailed error
+        const errorMsg = error instanceof Error ? error.message : String(error);
+        const match = errorMsg.match(/position (\d+)/);
+        const position = match ? parseInt(match[1]) : 0;
+
+        // Show context around the error
+        let context = '';
+        if (position > 0 && optimizelyResultsJson.length > 0) {
+          const start = Math.max(0, position - 50);
+          const end = Math.min(optimizelyResultsJson.length, position + 50);
+          context = `\n\nError context: ...${optimizelyResultsJson.substring(start, end)}...`;
+        }
+
+        throw new Error(
+          `Invalid Optimizely results JSON: ${errorMsg}${context}\n\nTried automatic fixes but still failed. Please ensure the JSON is properly formatted and escaped.`
+        );
+      }
+    }
+  } else {
     throw new Error(
-      `Invalid Optimizely results JSON: ${error instanceof Error ? error.message : String(error)}`
+      `Invalid optimizelyResultsJson type. Expected string or object, got ${typeof optimizelyResultsJson}`
     );
   }
 
@@ -294,7 +393,7 @@ tool({
       name: "optimizelyResultsJson",
       type: ParameterType.String,
       description:
-        'Complete Optimizely experiment results JSON (from Stats API). Must include: experiment_id, start_time, end_time, metrics (with results), reach (with variations), and stats_config. The tool will automatically extract all necessary data including experiment ID, dates, sample sizes, metrics, and variations.',
+        'Complete Optimizely experiment results (from Stats API). Can be either a JSON string OR a JavaScript object (preferred). Must include: experiment_id, start_time, end_time, metrics (with results), reach (with variations), and stats_config. The tool will automatically extract all necessary data. If sending as a string, ensure it is valid JSON without string concatenation.',
       required: true,
     },
     {

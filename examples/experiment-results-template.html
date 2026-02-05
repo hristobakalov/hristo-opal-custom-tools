@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="corporate">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+  <title>Experiment Results: [[experiment_name]]</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
+  <script>
+    tailwind.config = {
+      daisyui: {
+        themes: ["corporate"],
+      },
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+    .gradient-header {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      box-shadow: 0 20px 25px -5px rgba(99,102,241,.3), 0 10px 10px -5px rgba(99,102,241,.2);
+    }
+    .variation-bar {
+      transition: all .3s ease;
+      border: 1px solid hsl(var(--bc)/.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .variation-bar:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 16px rgba(0,0,0,.12), 0 2px 4px rgba(0,0,0,.08);
+      border-color: hsl(var(--bc)/.2);
+    }
+    .metric-card {
+      transition: all .3s ease;
+      border: 1px solid hsl(var(--bc)/.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+    }
+    .metric-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,.15), 0 4px 8px rgba(0,0,0,.1);
+      border-color: hsl(var(--p)/.3);
+    }
+    .card {
+      border: 1px solid hsl(var(--bc)/.1);
+      box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .stat {
+      border: 1px solid hsl(var(--bc)/.1);
+      box-shadow: 0 2px 8px rgba(0,0,0,.08);
+    }
+    .badge {
+      box-shadow: 0 2px 4px rgba(0,0,0,.1);
+      border-radius: 9999px;
+      padding-top: .75rem;
+      padding-bottom: .75rem;
+    }
+    @media print {.no-print { display: none; } }
+  </style>
+</head>
+<body class="bg-base-200">
+  <div class="container mx-auto px-4 py-8 max-w-7xl">
+
+    <!-- Header Section -->
+    <div class="gradient-header rounded-2xl shadow-xl p-8 mb-8 text-white">
+      <div class="flex items-start justify-between mb-4">
+        <div class="flex-1">
+          <h1 class="text-4xl font-bold mb-2">[[experiment_name]]</h1>
+          <p class="text-white/90 text-lg">Experiment ID: [[experiment_id]]</p>
+          <p class="text-white/80 text-base mt-2">[[hypothesis]]</p>
+        </div>
+        <div class="badge badge-lg badge-ghost text-white border-white/30">[[recommendation_status]]</div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div class="text-white/70 text-sm">Duration</div>
+          <div class="text-white text-xl font-semibold">[[duration]]</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div class="text-white/70 text-sm">Date Range</div>
+          <div class="text-white text-xl font-semibold">[[date_range]]</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div class="text-white/70 text-sm">Total Sample</div>
+          <div class="text-white text-xl font-semibold">[[sample_size_formatted]]</div>
+        </div>
+        <div class="bg-white/10 backdrop-blur-sm rounded-lg p-4">
+          <div class="text-white/70 text-sm">Confidence Level</div>
+          <div class="text-white text-xl font-semibold">[[confidence_level]]%</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
+      <!-- Left Column (2/3 width) -->
+      <div class="lg:col-span-2 space-y-6">
+
+        <!-- Variations Section -->
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Variations
+            </h2>
+            <div class="space-y-4">
+              [[variations]]
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics Section -->
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+              Metrics & Results
+            </h2>
+            <div class="grid grid-cols-1 gap-4">
+              [[metrics]]
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendation Section -->
+        <div class="card bg-base-100 shadow-xl border-2 [[recommendation_border_class]]">
+          <div class="card-body">
+            <h2 class="card-title text-2xl mb-4">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+              </svg>
+              Recommendation
+            </h2>
+            <div class="space-y-4">
+              <div class="flex items-center gap-2">
+                <span class="badge [[recommendation_badge_class]] badge-lg">[[recommendation_status]]</span>
+                <h3 class="text-xl font-semibold">[[recommendation_title]]</h3>
+              </div>
+              <p class="text-base-content/80 text-lg">[[recommendation_description]]</p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Right Column (1/3 width) -->
+      <div class="space-y-6">
+
+        <!-- Experiment Overview Card -->
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-xl">Experiment Overview</h2>
+            <div class="space-y-3">
+              <div class="flex justify-between items-center">
+                <span class="text-base-content/70">Experiment ID</span>
+                <span class="font-semibold text-sm">[[experiment_id]]</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-base-content/70">Status</span>
+                <span class="badge badge-primary badge-ghost">[[recommendation_status]]</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-base-content/70">Variations</span>
+                <span class="font-semibold">[[variations_count]]</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-base-content/70">Metrics</span>
+                <span class="font-semibold">[[metrics_count]]</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-base-content/70">Sample Size</span>
+                <span class="font-semibold">[[sample_size_formatted]]</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-base-content/70">Confidence</span>
+                <span class="font-semibold">[[confidence_level]]%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next Actions Card -->
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-xl mb-3">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+              </svg>
+              Next Actions
+            </h2>
+            <ul class="space-y-2 text-sm text-base-content/80">
+              [[actions]]
+            </ul>
+          </div>
+        </div>
+
+        <!-- Statistical Details Card -->
+        <div class="card bg-base-100 shadow-xl">
+          <div class="card-body">
+            <h2 class="card-title text-xl mb-3">Statistical Details</h2>
+            <div class="space-y-3 text-sm">
+              <div>
+                <div class="font-semibold mb-1 text-base-content">Confidence Level</div>
+                <p class="text-base-content/80">[[confidence_level]]% confidence threshold used for statistical significance</p>
+              </div>
+              <div>
+                <div class="font-semibold mb-1 text-base-content">Test Methodology</div>
+                <p class="text-base-content/80">A/B/n test with [[variations_count]] variations using visitor-level randomization</p>
+              </div>
+              <div>
+                <div class="font-semibold mb-1 text-base-content">Duration</div>
+                <p class="text-base-content/80">[[duration]] of testing ([[date_range]])</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+</body>
+</html>

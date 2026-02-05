@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node build/main.js",
-    "dev": "tsc-watch --onSuccess \"node build/main.js\""
+    "dev": "tsc-watch --onSuccess \"node build/main.js\"",
+    "ngrok": "./start-with-ngrok.sh"
   },
   "dependencies": {
     "@netlify/functions": "^2.4.1",

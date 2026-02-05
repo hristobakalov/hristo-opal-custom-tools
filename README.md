@@ -2,6 +2,12 @@
 
 A custom tools service for Optimizely Opal that exposes tools via HTTP endpoints using the `@optimizely-opal/opal-tools-sdk`.
 
+## Quick Start
+
+**Want to get started quickly?** See [QUICK_START.md](QUICK_START.md) for a streamlined setup guide.
+
+**Testing locally with ngrok?** See [NGROK_SETUP.md](NGROK_SETUP.md) for detailed ngrok configuration.
+
 ## Getting Started
 
 ### Prerequisites
@@ -23,11 +29,37 @@ yarn build
 
 # Run the compiled application
 yarn start
+
+# Start with ngrok tunnel (exposes local server publicly)
+yarn ngrok
 ```
 
 The server will start on port 3000 (or the PORT environment variable) and expose:
 - Tools endpoints for each registered tool
 - Discovery endpoint at `/discovery`
+
+### Exposing Locally with ngrok
+
+To test your tools from Optimizely Opal while running locally, you can use ngrok to create a public URL:
+
+```bash
+# Quick start - builds, starts server, and creates ngrok tunnel
+yarn ngrok
+
+# Or run the script directly
+./start-with-ngrok.sh
+```
+
+This will:
+1. Build your project
+2. Start the Express server on port 3000
+3. Create an ngrok tunnel with a public HTTPS URL
+4. Display the public URL (e.g., `https://abc123.ngrok.io`)
+5. Load environment variables from `.env` file if present
+
+**Important**: Make sure you have set `SUPABASE_ANON_KEY` in your `.env` file for the `generate_experiment_report` tool to work.
+
+The ngrok web interface will be available at `http://localhost:4040` where you can inspect requests and responses.
 
 ## Available Tools
 

@@ -62,3 +62,8 @@ Thumbs.db
 # Temporary folders
 tmp/
 temp/
+
+# ngrok
+ngrok
+ngrok.exe
+ngrok.log
